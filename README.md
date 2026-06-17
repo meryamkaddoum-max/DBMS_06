@@ -133,7 +133,7 @@ CREATE ROLE <your-username> WITH LOGIN PASSWORD '<choose-a-password>';
 Create the database and assign ownership to your new role:
 
 ```sql
-CREATE DATABASE bibliothek OWNER <your-username>;
+CREATE DATABASE bibliothek_<your-username> OWNER <your-username>;
 ```
 
 Verify:
@@ -142,7 +142,7 @@ Verify:
 SELECT rolname FROM pg_roles WHERE rolname = '<your-username>';
 SELECT datname, pg_catalog.pg_get_userbyid(datdba) AS owner
 FROM   pg_database
-WHERE  datname = 'bibliothek';
+WHERE  datname = 'bibliothek_<your-username>';
 ```
 
 Exit the superuser session:
@@ -161,7 +161,7 @@ Exit the superuser session:
 ## 3 – Connect as Your Own User
 
 ```bash
-psql -U <your-username> -d bibliothek
+psql -U <your-username> -d bibliothek_<your-username>
 ```
 
 You should see:
@@ -174,7 +174,7 @@ bibliothek=>
 ```
 
 > From this point on, every `psql` session in this exercise connects with
-> `psql -U <your-username> -d bibliothek` unless stated otherwise.
+> `psql -U <your-username> -d bibliothek_<your-username>` unless stated otherwise.
 
 ---
 
