@@ -99,6 +99,7 @@ psql --version
 > **Screenshot 2:** Take a screenshot showing the output of both commands.
 >
 > `[insert screenshot]`
+<img width="782" height="165" alt="Screenshot 2026-06-23 at 11 17 14 pm" src="https://github.com/user-attachments/assets/ce25d559-7851-4f80-b875-e6142363fa71" />
 
 ---
 
@@ -148,13 +149,15 @@ WHERE  datname = 'bibliothek_<your-username>';
 Exit the superuser session:
 
 ```sql
-\q
+
+
 ```
 
 > **Screenshot 3:** Take a screenshot showing the `CREATE ROLE`, `CREATE DATABASE`,
 > and both `SELECT` results inside the `postgres=#` session.
 >
 > `[insert screenshot]`
+<img width="848" height="514" alt="image" src="https://github.com/user-attachments/assets/a5b3e270-c28f-4493-9590-918cba4c3fb0" />
 
 ---
 
@@ -257,6 +260,8 @@ Inspect the structure of one table:
 > `\d ausleihe`.
 >
 > `[insert screenshot]`
+> <img width="934" height="415" alt="Screenshot 2026-06-23 at 11 29 37 pm" src="https://github.com/user-attachments/assets/513b4a1f-b3cb-4200-be6b-04d80f94dfef" />
+
 
 ### Questions for Section 4
 
@@ -265,18 +270,22 @@ and `mitglied` before `ausleihe`. Why does this order matter? What error would
 PostgreSQL report if you tried to create `ausleihe` first?
 
 > *Your answer:*
+> Die Reihenfolge ist wichtig, weil einige Tabellen Foreign Keys enthalten. exemplar verweist auf buch und ausleihe verweist auf exemplar und mitglied. Deshalb müssen diese Tabellen zuerst existieren. Andernfalls meldet PostgreSQL einen Fehler.
 
 **Question 4.2:** The `mitglied_id` and `ausleihe_id` columns use
 `GENERATED ALWAYS AS IDENTITY`. What does this mean? What happens if you try to
 supply a value explicitly with `INSERT INTO mitglied (mitglied_id, ...) VALUES (5, ...)`?
 
 > *Your answer:*
+> GENERATED ALWAYS AS IDENTITY bedeutet, dass PostgreSQL die ID automatisch erzeugt. Bei jedem neuen Datensatz wird die nächste freie Nummer vergeben. Wenn man selbst einen Wert für die ID angibt, entsteht normalerweise ein Fehler.
+
 
 **Question 4.3:** `tagesgebuehr` is defined as `NUMERIC(6,2)` while a simpler
 `REAL` would also hold decimal numbers. Give a concrete example of an arithmetic
 result that would differ between the two types when calculating a lending fee.
 
 > *Your answer:*
+> NUMERIC(6,2) speichert Dezimalzahlen exakt und eignet sich daher für Geldbeträge. REAL kann kleine Rundungsfehler verursachen. Deshalb ist NUMERIC(6,2) für die Berechnung von Leihgebühren genauer und besser geeignet.
 
 ---
 
@@ -362,6 +371,7 @@ SELECT COUNT(*) FROM mitglied;
 > **Screenshot 5:** Take a screenshot showing the three `COUNT(*)` results.
 >
 > `[insert screenshot]`
+> <img width="435" height="272" alt="Screenshot 2026-06-23 at 11 38 52 pm" src="https://github.com/user-attachments/assets/c936ec13-0bed-4a48-917a-3b81c00947f2" />
 
 Exit `psql`:
 
@@ -447,6 +457,8 @@ SELECT * FROM ausleihe;
 > **Screenshot 6:** Take a screenshot showing the full output of `SELECT * FROM ausleihe`.
 >
 > `[insert screenshot]`
+> <img width="802" height="224" alt="Screenshot 2026-06-23 at 11 52 59 pm" src="https://github.com/user-attachments/assets/6b8eec2d-40c7-45d4-853c-f2d1428fbf7c" />
+
 
 ### Questions for Section 6
 
@@ -455,11 +467,13 @@ filesystem. What is the difference between server-side `COPY` and a
 client-side import? In which scenario would you need the client-side variant?
 
 > *Your answer:*
+> Serverseitiges COPY liest die Datei direkt auf dem Datenbankserver. Beim clientseitigen Import befindet sich die Datei auf dem Rechner des Benutzers. Die clientseitige Variante wird benötigt, wenn die Datei nicht auf dem Server gespeichert ist.
 
 **Question 6.2:** The `NULL ''` option maps empty CSV fields to `NULL`.
 What would happen without this option if the `rueckgabe_datum` field is empty?
 
 > *Your answer:*
+> Ohne NULL '' würde PostgreSQL ein leeres Feld nicht als NULL interpretieren und beim Import einen Fehler erzeugen.
 
 **Question 6.3:** `ausleihe_id` is `GENERATED ALWAYS AS IDENTITY` and was not
 included in the CSV or the `COPY` column list. How does PostgreSQL handle the
@@ -467,6 +481,8 @@ missing value? What would happen if you tried to include `ausleihe_id` in the
 `COPY` column list with explicit values?
 
 > *Your answer:*
+PostgreSQL erzeugt die ausleihe_id automatisch. Deshalb muss sie nicht in der CSV-Datei stehen. Würde man eigene Werte für ausleihe_id importieren, würde PostgreSQL einen Fehler melden, da die ID automatisch generiert wird.
+> 
 
 ---
 
@@ -503,6 +519,7 @@ ORDER BY tage_ausgeliehen DESC;
 
 > *Describe the result: how many open loans are there, and which member has
 > held a book the longest?*
+> Es gibt 2 offene Ausleihen. Das Buch „Homo Faber“ wurde von Lea Hartmann bereits 50 Tage ausgeliehen und ist damit die längste offene Ausleihe. Die zweite offene Ausleihe ist „Der Vorleser“ von Jonas Berger mit 43 Tagen.
 
 ---
 
@@ -524,6 +541,7 @@ ORDER BY ausleihen_gesamt DESC;
 
 > *Which member has the most loans? What does `FILTER (WHERE ...)` do here
 > compared to a `CASE WHEN` expression?*
+> Jonas Berger hat mit insgesamt 2 Ausleihen die meisten Ausleihen. Davon ist noch 1 Ausleihe offen. Die Funktion FILTER (WHERE ...) zählt nur die Datensätze, die die angegebene Bedingung erfüllen, also hier die noch nicht zurückgegebenen Bücher.
 
 ---
 
@@ -546,11 +564,14 @@ WHERE  NOT EXISTS (
 
 > *Which books appear in the result? Verify the result manually against the
 > data you entered.*
+> In der Ergebnisliste erscheint nur das Buch „Das Parfum“ vom Verlag Fischer. Für dieses Buch existiert kein Eintrag in der Tabelle ausleihe, daher wurde es bisher noch nie ausgeliehen. Dies stimmt mit den eingegebenen Testdaten überein.
 
 > **Screenshot 7:** Take a screenshot showing the output of all three queries
 > in sequence in the `psql` shell.
 >
 > `[insert screenshot]`
+> <img width="749" height="715" alt="Screenshot 2026-06-24 at 12 03 36 am" src="https://github.com/user-attachments/assets/3bcc9642-d334-4e1d-a689-53270bf57d7b" />
+
 
 ### Questions for Section 7
 
@@ -559,18 +580,30 @@ performed to always produce a correct result, and does the join order affect
 correctness or only performance?
 
 > *Your answer:*
+> Die Tabellen werden über ihre Fremdschlüssel miteinander verbunden. Die Join-Reihenfolge beeinflusst normalerweise nicht die Korrektheit des Ergebnisses, sondern hauptsächlich die Ausführungsgeschwindigkeit der Abfrage.
 
 **Question 7.2:** Query 2 groups by `m.mitglied_id` in addition to the name
 columns. Why is grouping by the primary key necessary even though names appear
 unique in the sample data?
 
 > *Your answer:*
+> Es wird nach mitglied_id gruppiert, weil diese ID jedes Mitglied eindeutig identifiziert. Vor- und Nachnamen können bei verschiedenen Personen gleich sein.
 
 **Question 7.3:** Query 3 uses `NOT EXISTS` with a correlated subquery. Rewrite
 the query using `EXCEPT` and verify that both variants return the same result.
 Write your rewritten query here:
 
+
 > *Your rewritten query:*
+> SELECT titel, verlag
+FROM buch
+
+EXCEPT
+
+SELECT b.titel, b.verlag
+FROM buch b
+JOIN exemplar e ON e.isbn = b.isbn
+JOIN ausleihe a ON a.exemplar_id = e.exemplar_id;
 
 Exit `psql`:
 
@@ -668,6 +701,8 @@ psql -U <your-username> -d kino -f kino.sql
 > **Screenshot 8:** Take a screenshot showing the script execution output.
 >
 > `[insert screenshot]`
+> <img width="779" height="169" alt="Screenshot 2026-06-24 at 12 15 51 am" src="https://github.com/user-attachments/assets/c2ed814c-be3d-4447-98b2-d3d6c723a643" />
+
 
 ---
 
@@ -721,6 +756,7 @@ ORDER BY reservierungen DESC;
 > `SELECT` statements.
 >
 > `[insert screenshot]`
+<img width="820" height="630" alt="Screenshot 2026-06-24 at 12 18 16 am" src="https://github.com/user-attachments/assets/8cc42c30-aab4-4afb-8cb9-f522c211d5d1" />
 
 ### Questions for Section 9
 
@@ -729,18 +765,21 @@ constraint. What does this prevent, and at which level is this constraint
 enforced — application or database?
 
 > *Your answer:*
+> Die Constraint UNIQUE (vorstellung_id, sitzplatz) verhindert, dass derselbe Sitzplatz für dieselbe Vorstellung mehrfach reserviert wird. Diese Regel wird direkt von der Datenbank durchgesetzt.
 
 **Question 9.2:** The third query uses `LEFT JOIN` between `vorstellung` and
 `reservierung`. What would be different about the result if you used `JOIN`
 (inner join) instead? Which films would disappear from the result and why?
 
 > *Your answer:*
+> Mit LEFT JOIN werden alle Filme angezeigt, auch wenn keine Reservierungen vorhanden sind. Bei einem normalen JOIN würden Filme ohne Reservierungen nicht im Ergebnis erscheinen, da keine passenden Datensätze in der Tabelle reservierung existieren.
 
 **Question 9.3:** `ON DELETE CASCADE` was chosen for `reservierung.vorstellung_id`,
 but `ON DELETE RESTRICT` for `vorstellung.film_id`. Justify both choices in
 terms of the domain.
 
 > *Your answer:*
+> Mit LEFT JOIN werden alle Filme angezeigt, auch wenn keine Reservierungen vorhanden sind. Bei einem normalen JOIN würden Filme ohne Reservierungen nicht im Ergebnis erscheinen, da keine passenden Datensätze in der Tabelle reservierung existieren.
 
 Exit `psql`:
 
@@ -758,6 +797,8 @@ but they operate very differently. Name two concrete differences you experienced
 in this exercise — in terms of setup, access control, or SQL behaviour.
 
 > *Your answer:*
+> SQLite ist eine eingebettete Datenbank, die direkt auf einer Datei arbeitet. PostgreSQL läuft als eigener Datenbankserver. Außerdem besitzt PostgreSQL Benutzer, Rollen und Rechteverwaltung, während SQLite keine separate Benutzerverwaltung hat.
+> 
 
 **Question B – COPY vs. INSERT:**  
 You inserted the `buch` and `exemplar` rows one at a time, and the `ausleihe`
@@ -766,6 +807,7 @@ choose and why? What is the main operational cost of individual `INSERT`
 statements at scale?
 
 > *Your answer:*
+> Für einen Import von 50.000 Datensätzen würde ich COPY verwenden, da es deutlich schneller ist. Einzelne INSERT-Befehle verursachen bei großen Datenmengen einen hohen Verwaltungs- und Kommunikationsaufwand und sind deshalb wesentlich langsamer.
 
 **Question C – Role model:**  
 You created a dedicated role with `LOGIN` and a password. The `postgres`
@@ -773,6 +815,7 @@ superuser also exists. What is the security principle behind creating a
 separate role instead of always connecting as `postgres`?
 
 > *Your answer:*
+> DIe Verwendung einer eigenen Rolle folgt dem Prinzip der geringsten Rechte (Principle of Least Privilege). Dadurch arbeitet man nicht ständig mit den umfassenden Rechten des Superusers postgres und reduziert Sicherheitsrisiken.
 
 **Question D – Script-driven setup:**  
 The `kino.sql` script creates the schema and inserts data in one run. What
@@ -780,6 +823,7 @@ is the advantage of this approach over typing the statements interactively?
 Name one situation where an interactive approach is still preferable.
 
 > *Your answer:*
+> Ein SQL-Skript ermöglicht die automatische und wiederholbare Erstellung der Datenbankstruktur und der Daten. Dadurch werden Fehler durch manuelle Eingaben vermieden. Eine interaktive Eingabe ist sinnvoll, wenn einzelne Abfragen getestet oder Daten spontan analysiert werden sollen.
 
 ---
 
