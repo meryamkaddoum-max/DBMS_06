@@ -595,7 +595,7 @@ Write your rewritten query here:
 
 
 > *Your rewritten query:*
-> SELECT titel, verlag
+SELECT titel, verlag
 FROM buch
 
 EXCEPT
