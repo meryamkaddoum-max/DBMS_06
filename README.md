@@ -595,6 +595,7 @@ Write your rewritten query here:
 
 
 > *Your rewritten query:*
+```sql
 SELECT titel, verlag
 FROM buch
 
@@ -604,6 +605,7 @@ SELECT b.titel, b.verlag
 FROM buch b
 JOIN exemplar e ON e.isbn = b.isbn
 JOIN ausleihe a ON a.exemplar_id = e.exemplar_id;
+```
 
 Exit `psql`:
 
